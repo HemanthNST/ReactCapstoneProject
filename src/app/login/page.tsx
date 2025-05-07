@@ -81,7 +81,7 @@ const Page = () => {
               }}
               className={`w-full bg-[#D71921] rounded-full py-6 cursor-pointer hover:opacity-70 transition-opacity duration-200 ease-in-out ${InstrumentSans.className}`}
             >
-              PROCEED FORWARD
+              STEP FORWARD
             </button>
           </div>
         </div>
