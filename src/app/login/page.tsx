@@ -22,8 +22,7 @@ const Page = () => {
             flexDirection: "column",
             gap: "20px",
           }}
-          className="w-full"
-        >
+          className="w-full">
           <h1 className="text-2xl font-bold m-2">WELCOME BACK</h1>
           <div className="flex flex-col gap-0 w-full">
             <div className="flex gap-4 bg-[#1A1A1A] rounded-t-4xl py-8 px-16 w-full">
@@ -57,12 +56,11 @@ const Page = () => {
           <div className="flex w-full gap-12">
             <Link
               href="/register"
-              className={`w-full border-1 border-white rounded-full py-6 cursor-pointer hover:bg-white hover:text-black transition-colors duration-200 ease-in-out text-center ${InstrumentSans.className}`}
-            >
+              className={`w-full border-1 border-white rounded-full py-6 cursor-pointer hover:bg-white hover:text-black transition-colors duration-200 ease-in-out text-center ${InstrumentSans.className}`}>
               REGISTER INSTEAD?
             </Link>
             <button
-              onClick={async (e) => {
+              onClick={async e => {
                 e.preventDefault();
                 const email = emailRef.current?.value;
                 const password = passwordRef.current?.value;
@@ -78,9 +76,12 @@ const Page = () => {
 
                 const data = await res.json();
                 console.log(data);
+
+                if (res.ok) {
+                  window.location.href = "/dashboard";
+                }
               }}
-              className={`w-full bg-[#D71921] rounded-full py-6 cursor-pointer hover:opacity-70 transition-opacity duration-200 ease-in-out ${InstrumentSans.className}`}
-            >
+              className={`w-full bg-[#D71921] rounded-full py-6 cursor-pointer hover:opacity-70 transition-opacity duration-200 ease-in-out ${InstrumentSans.className}`}>
               STEP FORWARD
             </button>
           </div>

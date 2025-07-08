@@ -24,8 +24,7 @@ const Page = () => {
             flexDirection: "column",
             gap: "20px",
           }}
-          className="w-full"
-        >
+          className="w-full">
           <h1 className="text-2xl font-bold mb-0 ml-0 m-2">
             WELCOME TO STEPPY
           </h1>
@@ -67,7 +66,7 @@ const Page = () => {
                 height={24}
               />
               <input
-                placeholder="Confirm password"
+                placeholder="Enter your password"
                 type="password"
                 ref={passwordRef}
                 className="outline-none w-full"
@@ -81,7 +80,7 @@ const Page = () => {
                 height={24}
               />
               <input
-                placeholder="Enter your password"
+                placeholder="Confirm your password"
                 type="password"
                 ref={confirmPasswordRef}
                 className="outline-none w-full"
@@ -91,19 +90,25 @@ const Page = () => {
           <div className="flex w-full gap-12">
             <Link
               href="/login"
-              className={`w-full border-1 border-white rounded-full py-6 cursor-pointer hover:bg-white hover:text-black transition-colors duration-200 ease-in-out text-center ${InstrumentSans.className}`}
-            >
+              className={`w-full border-1 border-white rounded-full py-6 cursor-pointer hover:bg-white hover:text-black transition-colors duration-200 ease-in-out text-center ${InstrumentSans.className}`}>
               LOGIN INSTEAD?
             </Link>
             <button
-              onClick={async (e) => {
+              onClick={async e => {
                 e.preventDefault();
+                const name = nameRef.current?.value;
                 const email = emailRef.current?.value;
                 const password = passwordRef.current?.value;
+                const confirmPassword = confirmPasswordRef.current?.value;
 
-                const res = await fetch("/api/auth/login", {
+                if (password !== confirmPassword) {
+                  alert("Passwords don't match!");
+                  return;
+                }
+
+                const res = await fetch("/api/auth/register", {
                   method: "POST",
-                  body: JSON.stringify({ email, password }),
+                  body: JSON.stringify({ name, email, password }),
                   headers: {
                     "Content-Type": "application/json",
                     include: "credentials",
@@ -112,9 +117,12 @@ const Page = () => {
 
                 const data = await res.json();
                 console.log(data);
+
+                if (res.ok) {
+                  window.location.href = "/dashboard";
+                }
               }}
-              className={`w-full bg-[#D71921] rounded-full py-6 cursor-pointer hover:opacity-70 transition-opacity duration-200 ease-in-out ${InstrumentSans.className}`}
-            >
+              className={`w-full bg-[#D71921] rounded-full py-6 cursor-pointer hover:opacity-70 transition-opacity duration-200 ease-in-out ${InstrumentSans.className}`}>
               STEP FORWARD
             </button>
           </div>

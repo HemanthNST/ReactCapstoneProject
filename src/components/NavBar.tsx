@@ -9,6 +9,7 @@ const NavBar = () => {
           <Image src="/logo.svg" width={43} height={38} alt="Logo" />
         </Link>
         <div className="flex items-center gap-5 lg:gap-9 text-xl lg:text-2xl">
+          <Link href="/dashboard">dashboard</Link>
           <Link href="/about">about</Link>
           <Link href="/steps">steps</Link>
           <Link href="/profile">profile</Link>
