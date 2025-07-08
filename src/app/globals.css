@@ -33,3 +33,31 @@ body {
   font-style: normal;
   font-display: swap;
 }
+
+/* Custom Notyf styling to match app theme */
+.notyf__toast {
+  border-radius: 12px !important;
+  font-family: var(--secondary-font) !important;
+  font-weight: 600 !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3) !important;
+}
+
+.notyf__wrapper {
+  z-index: 9999 !important;
+}
+
+.notyf__toast--success {
+  background: linear-gradient(135deg, #4caf50, #45a049) !important;
+}
+
+.notyf__toast--error {
+  background: linear-gradient(135deg, #d71921, #b71c1c) !important;
+}
+
+.notyf__toast--warning {
+  background: linear-gradient(135deg, #ff9800, #f57c00) !important;
+}
+
+.notyf__toast--info {
+  background: linear-gradient(135deg, #2196f3, #1976d2) !important;
+}

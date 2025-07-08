@@ -23,12 +23,15 @@ export async function GET(req: NextRequest) {
       process.env.NEXT_PUBLIC_SESSION_SECRET as string
     ) as TokenPayload;
 
-    const name = await db
-      .select({ name: users.name })
+    const userInfo = await db
+      .select({
+        name: users.name,
+        profilePicture: users.profilePicture,
+      })
       .from(users)
       .where(eq(users.uuid, payload.uuid));
 
-    if (name.length === 0) {
+    if (userInfo.length === 0) {
       const response = NextResponse.json(
         { error: "Unauthorized" },
         { status: 401 }
@@ -41,7 +44,8 @@ export async function GET(req: NextRequest) {
       {
         message: "Authorized",
         userId: payload.uuid,
-        name: name[0]?.name,
+        name: userInfo[0]?.name,
+        profilePicture: userInfo[0]?.profilePicture,
       },
       { status: 200 }
     );

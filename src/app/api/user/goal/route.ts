@@ -3,7 +3,7 @@
 //
 // The streak feature uses a hardcoded goal and is implemented in:
 // - /api/fitness/steps-simple/route.ts (streak calculation)
-// - /dashboard/page.tsx (streak display)
+// - /steps/page.tsx (streak display)
 
 import { NextResponse } from "next/server";
 

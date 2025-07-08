@@ -64,16 +64,14 @@ export async function GET(req: NextRequest) {
         console.log(
           "Invalid grant error - authorization code may have been used already or expired"
         );
-        return NextResponse.redirect(`${baseUrl}/dashboard?error=code_expired`);
+        return NextResponse.redirect(`${baseUrl}/steps?error=code_expired`);
       }
       throw tokenError;
     }
 
     if (!tokens.access_token) {
       console.log("No access token received");
-      return NextResponse.redirect(
-        `${baseUrl}/dashboard?error=google_auth_failed`
-      );
+      return NextResponse.redirect(`${baseUrl}/steps?error=google_auth_failed`);
     }
 
     console.log("Access token received, updating user in database");
@@ -133,11 +131,9 @@ export async function GET(req: NextRequest) {
     }
 
     console.log("User updated successfully, redirecting to dashboard");
-    return NextResponse.redirect(`${baseUrl}/dashboard?connected=true`);
+    return NextResponse.redirect(`${baseUrl}/steps?connected=true`);
   } catch (error) {
     console.error("Google OAuth callback error:", error);
-    return NextResponse.redirect(
-      `${baseUrl}/dashboard?error=google_auth_failed`
-    );
+    return NextResponse.redirect(`${baseUrl}/steps?error=google_auth_failed`);
   }
 }
