@@ -20,38 +20,18 @@ if (typeof window !== "undefined") {
       {
         type: "success",
         background: "#4CAF50",
-        icon: {
-          className: "material-icons",
-          tagName: "i",
-          text: "✓",
-        },
       },
       {
         type: "error",
         background: "#F44336",
-        icon: {
-          className: "material-icons",
-          tagName: "i",
-          text: "✗",
-        },
       },
       {
         type: "warning",
         background: "#FF9800",
-        icon: {
-          className: "material-icons",
-          tagName: "i",
-          text: "⚠",
-        },
       },
       {
         type: "info",
         background: "#2196F3",
-        icon: {
-          className: "material-icons",
-          tagName: "i",
-          text: "ℹ",
-        },
       },
     ],
   });

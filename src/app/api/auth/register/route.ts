@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { hash } from "bcrypt";
+import { hash } from "bcryptjs";
 import jwt from "jsonwebtoken";
 import db from "@/config/drizzle";
 import { users } from "@/db/schema";

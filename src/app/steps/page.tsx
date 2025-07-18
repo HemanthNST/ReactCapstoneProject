@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import { notyf } from "@/lib/notyf";
+import { redirectIfNotAuthenticated } from "@/lib/auth";
+import Image from "next/image";
 
 interface StepData {
   date: string;
@@ -9,6 +11,7 @@ interface StepData {
 
 interface UserData {
   totalSteps: number;
+  todaySteps: number;
   dailySteps: StepData[];
   connected: boolean;
   message?: string;
@@ -20,8 +23,12 @@ const Steps = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [user, setUser] = useState<{ name: string } | null>(null);
+  const [goal, setGoal] = useState<number>(10000); // Default goal
 
   useEffect(() => {
+    // Check authentication and redirect if not authenticated
+    redirectIfNotAuthenticated();
+
     // Verify user session
     const verifySession = async () => {
       try {
@@ -42,6 +49,26 @@ const Steps = () => {
   }, []);
 
   useEffect(() => {
+    // Verify user session
+    const goalSetter = async () => {
+      try {
+        const res = await fetch("/api/user/goal");
+        if (res.ok) {
+          const data = await res.json();
+          setGoal(data.dailyStepsGoal);
+        } else {
+          setGoal(10000);
+        }
+      } catch (error) {
+        console.error("Failed to fetch user goal:", error);
+        setGoal(10000);
+      }
+    };
+
+    goalSetter();
+  }, []);
+
+  useEffect(() => {
     if (user) {
       fetchStepData();
     }
@@ -54,7 +81,6 @@ const Steps = () => {
     const errorParam = urlParams.get("error");
 
     if (connected === "true") {
-      console.log("Google Fit connected successfully!");
       notyf.success("Google Fit connected successfully! 🎉");
       // Remove the parameter from URL
       window.history.replaceState({}, document.title, window.location.pathname);
@@ -82,7 +108,6 @@ const Steps = () => {
   }, []);
 
   const fetchStepData = async () => {
-    console.log("🔄 Refresh Data button clicked - fetching step data...");
     try {
       setLoading(true);
       setError(null); // Clear previous errors
@@ -96,7 +121,6 @@ const Steps = () => {
 
       if (res.ok) {
         const data = await res.json();
-        console.log("✅ Step data received from API:", data);
         setUserData(data);
 
         if (data.message) {
@@ -114,18 +138,18 @@ const Steps = () => {
 
         if (res.status === 401) {
           notyf.error(
-            "Google Fit token expired. Please reconnect your account."
+            "Google Fit token expired. Please reconnect your account.",
           );
         } else if (
           res.status === 400 &&
           errorData.error?.includes("not connected")
         ) {
           notyf.error(
-            "Google Fit not connected. Please connect your account first."
+            "Google Fit not connected. Please connect your account first.",
           );
         } else {
           notyf.error(
-            errorData.error || "Failed to fetch step data. Please try again."
+            errorData.error || "Failed to fetch step data. Please try again.",
           );
         }
       }
@@ -135,14 +159,13 @@ const Steps = () => {
       notyf.error("Network error. Please check your connection and try again.");
     } finally {
       setLoading(false);
-      console.log("✅ Fetch step data completed");
     }
   };
 
   const calculateStreak = (dailySteps: StepData[], goal: number): number => {
     // Sort steps by date (most recent first)
     const sortedSteps = [...dailySteps].sort(
-      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
     );
 
     let currentStreak = 0;
@@ -177,8 +200,8 @@ const Steps = () => {
   }
 
   return (
-    <div className="min-h-screen p-8 pt-32 font-['5by7']">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen p-8 mt-32 font-['5by7'] w-full">
+      <div className="mx-auto w-5/6 md:w-4/5 xl:w-3/5 h-full">
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2 font-['5by7B']">
             Welcome back, {user.name}!
@@ -196,7 +219,8 @@ const Steps = () => {
             </p>
             <button
               onClick={connectGoogleFit}
-              className="bg-[#D71921] text-white px-8 py-4 rounded-full hover:opacity-70 transition-opacity font-['5by7B']">
+              className="bg-[#D71921] text-white px-8 py-4 rounded-full hover:opacity-70 transition-opacity font-['5by7B']"
+            >
               CONNECT GOOGLE FIT
             </button>
           </div>
@@ -209,7 +233,8 @@ const Steps = () => {
             <div className="text-red-400 text-xl">{error}</div>
             <button
               onClick={connectGoogleFit}
-              className="mt-4 bg-[#D71921] text-white px-8 py-4 rounded-full hover:opacity-70 transition-opacity font-['5by7B']">
+              className="mt-4 bg-[#D71921] text-white px-8 py-4 rounded-full hover:opacity-70 transition-opacity font-['5by7B']"
+            >
               RECONNECT GOOGLE FIT
             </button>
           </div>
@@ -225,94 +250,112 @@ const Steps = () => {
               </p>
               <button
                 onClick={fetchStepData}
-                className="bg-[#D71921] text-white px-8 py-4 rounded-full hover:opacity-70 transition-opacity font-['5by7B']">
+                className="bg-[#D71921] text-white px-8 py-4 rounded-full hover:opacity-70 transition-opacity font-['5by7B']"
+              >
                 REFRESH DATA
               </button>
             </div>
           ) : (
-            <div className="space-y-6">
-              {/* Total Steps Card */}
-              <div className="bg-[#1A1A1A] rounded-lg p-8 text-center">
-                <h2 className="text-2xl font-bold mb-2">
-                  Total Steps (Last 7 Days)
-                </h2>
-                <div className="text-6xl font-bold text-[#D71921] mb-2">
-                  {userData.totalSteps.toLocaleString()}
-                </div>
-                <p className="text-gray-400">Keep stepping forward!</p>
-              </div>
-
-              {/* Streak Card */}
-              <div className="bg-[#1A1A1A] rounded-lg p-8 text-center">
-                <h2 className="text-2xl font-bold mb-4">🔥 Current Streak</h2>
-                {(() => {
-                  const goal = 10000; // Hardcoded goal for streaks
-                  const streak = calculateStreak(userData.dailySteps, goal);
-                  return (
-                    <div>
-                      <div className="text-6xl font-bold text-[#FF6B35] mb-2">
-                        {streak}
-                      </div>
-                      <p className="text-gray-400 mb-2">
-                        {streak === 1 ? "day" : "days"} hitting{" "}
-                        {goal.toLocaleString()}+ steps
-                      </p>
-                      {streak > 0 ? (
-                        <p className="text-[#FF6B35] text-sm">
-                          🎉 Keep the momentum going!
-                        </p>
-                      ) : (
-                        <p className="text-gray-500 text-sm">
-                          Get {goal.toLocaleString()}+ steps today to start your
-                          streak!
-                        </p>
-                      )}
+            <div className="flex flex-col justify-center space-y-6 h-full">
+              <div className="flex flex-col xl:flex-row gap-12 xl:gap-24 items-center h-full">
+                <div className="flex flex-col lg:flex-row xl:flex-col gap-12">
+                  {/* Total Steps Card */}
+                  <div className="bg-[#1A1A1A] rounded-full text-center w-48 h-48 md:w-56 md:h-56 lg:w-64 lg:h-64 xl:w-72 xl:h-72 flex flex-col gap-4 items-center justify-center">
+                    <div className="flex justify-center lg:justify-start">
+                      <Image
+                        src="/steppy.svg"
+                        alt="Dotted Footsteps"
+                        width={180}
+                        height={180}
+                        className="w-36 h-36 lg:w-48 lg:h-48 -my-8 lg:-my-12"
+                      />
                     </div>
-                  );
-                })()}
-              </div>
+                    <div className="text-4xl lg:text-6xl font-bold z-1 -mb-5">
+                      {userData.todaySteps}
+                    </div>
+                  </div>
 
-              {/* Daily Steps */}
-              <div className="bg-[#1A1A1A] rounded-lg p-8">
-                <h2 className="text-2xl font-bold mb-6">Daily Breakdown</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {userData.dailySteps.map(day => {
-                    const goal = 10000; // Hardcoded goal
-                    const metGoal = day.steps >= goal;
-
-                    return (
-                      <div
-                        key={day.date}
-                        className="bg-[#282828] rounded-lg p-6 text-center relative">
-                        <div className="text-sm text-gray-400 mb-2">
-                          {new Date(day.date).toLocaleDateString("en-US", {
-                            weekday: "short",
-                            month: "short",
-                            day: "numeric",
-                          })}
-                        </div>
-                        <div className="text-3xl font-bold text-white mb-1">
-                          {day.steps.toLocaleString()}
-                        </div>
-                        <div className="text-sm text-gray-400 mb-2">steps</div>
-                        {/* Goal achievement indicator */}
-                        {metGoal && (
-                          <div className="absolute top-2 right-2">
-                            <span className="text-[#FF6B35] text-lg">🔥</span>
+                  {/* Streak Card */}
+                  <div className="bg-[#1A1A1A] rounded-full text-center w-48 h-48 md:w-56 md:h-56 lg:w-64 lg:h-64 xl:w-72 xl:h-72 flex flex-col gap-4 items-center justify-center">
+                    <div className="flex justify-center lg:justify-start">
+                      <Image
+                        src="/icons/fire.svg"
+                        alt="Fire"
+                        width={180}
+                        height={180}
+                        className="w-24 h-24"
+                      />
+                    </div>
+                    {(() => {
+                      const streak = calculateStreak(userData.dailySteps, goal);
+                      return (
+                        <div>
+                          <div className="text-4xl lg:text-6xl font-bold z-1 -mb-5">
+                            {streak}
                           </div>
-                        )}
-
-                        <div
-                          className={`text-xs mt-2 ${
-                            metGoal ? "text-[#FF6B35]" : "text-gray-500"
-                          }`}>
-                          {metGoal
-                            ? `${goal.toLocaleString()}+ achieved!`
-                            : `${(goal - day.steps).toLocaleString()} to goal`}
                         </div>
+                      );
+                    })()}
+                  </div>
+                </div>
+
+                {/* Daily Steps */}
+                <div className="bg-[#1A1A1A] rounded-4xl p-8 w-full">
+                  <h2 className="text-xl md:text-2xl font-bold mb-6">Daily Breakdown</h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {userData.dailySteps.map((day) => {
+                      const metGoal = day.steps >= goal;
+
+                      return (
+                        <div
+                          key={day.date}
+                          className="bg-[#282828] rounded-4xl p-6 text-center relative"
+                        >
+                          <div className="text-sm text-gray-400 mb-2">
+                            {new Date(day.date).toLocaleDateString("en-US", {
+                              weekday: "short",
+                              month: "short",
+                              day: "numeric",
+                            })}
+                          </div>
+                          <div className="text-3xl font-bold text-white mb-1">
+                            {day.steps.toLocaleString()}
+                          </div>
+                          <div className="text-sm text-gray-400 mb-2">
+                            steps
+                          </div>
+                          {/* Goal achievement indicator */}
+                          {metGoal && (
+                            <div className="absolute top-2 right-2">
+                              <span className="text-[#FF6B35] text-lg">🔥</span>
+                            </div>
+                          )}
+
+                          <div
+                            className={`text-xs mt-2 ${
+                              metGoal ? "text-[#FF6B35]" : "text-gray-500"
+                            }`}
+                          >
+                            {metGoal
+                              ? `${goal.toLocaleString()}+ achieved!`
+                              : `${(goal - day.steps).toLocaleString()} to goal`}
+                          </div>
+                        </div>
+                      );
+                    })}
+                    <div className="bg-[#282828] rounded-4xl p-6 text-center relative">
+                      <div className="text-sm text-gray-400 mb-2">
+                        Total Steps
                       </div>
-                    );
-                  })}
+                      <div className="text-3xl font-bold text-white mb-1">
+                        {userData.totalSteps.toLocaleString()}
+                      </div>
+                      <div className="text-sm text-gray-400 mb-2">steps</div>
+                      <div className={`text-xs mt-2 text-gray-500`}>
+                        taken in the last 8 days
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -320,12 +363,14 @@ const Steps = () => {
               <div className="flex gap-4 justify-center">
                 <button
                   onClick={fetchStepData}
-                  className="bg-[#282828] text-white px-6 py-3 rounded-full hover:bg-[#3A3A3A] transition-colors font-['5by7B']">
+                  className="bg-[#282828] text-white px-6 py-3 rounded-full hover:bg-[#3A3A3A] transition-colors font-['5by7B']"
+                >
                   REFRESH DATA
                 </button>
                 <button
                   onClick={connectGoogleFit}
-                  className="bg-[#D71921] text-white px-6 py-3 rounded-full hover:opacity-70 transition-opacity font-['5by7B']">
+                  className="bg-[#D71921] text-white px-6 py-3 rounded-full hover:opacity-70 transition-opacity font-['5by7B']"
+                >
                   RECONNECT GOOGLE FIT
                 </button>
               </div>

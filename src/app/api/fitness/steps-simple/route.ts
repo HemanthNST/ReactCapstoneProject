@@ -7,7 +7,6 @@ import { eq } from "drizzle-orm";
 
 export async function GET(req: NextRequest) {
   try {
-    // Get user session
     const sessionCookie = req.cookies.get("session");
     if (!sessionCookie) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -17,7 +16,7 @@ export async function GET(req: NextRequest) {
     try {
       const payload = jwt.verify(
         sessionCookie.value,
-        process.env.NEXT_PUBLIC_SESSION_SECRET!
+        process.env.NEXT_PUBLIC_SESSION_SECRET!,
       ) as { uuid: string };
       userId = payload.uuid;
     } catch (error) {
@@ -25,7 +24,6 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Get user's Google tokens
     const user = await db
       .select({
         googleAccessToken: users.googleAccessToken,
@@ -35,47 +33,49 @@ export async function GET(req: NextRequest) {
       })
       .from(users)
       .where(eq(users.uuid, userId));
-
     if (!user.length || user[0].isGoogleFitConnected !== "true") {
       return NextResponse.json(
         { error: "Google Fit not connected" },
-        { status: 400 }
+        { status: 400 },
       );
     }
-
     const userData = user[0];
     if (!userData.googleAccessToken) {
       return NextResponse.json(
         { error: "Google access token not found" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    // Set up Google OAuth client
     const oauth2Client = new google.auth.OAuth2(
       process.env.GOOGLE_CLIENT_ID,
       process.env.GOOGLE_CLIENT_SECRET,
-      process.env.GOOGLE_REDIRECT_URI
+      process.env.GOOGLE_REDIRECT_URI,
     );
-
     oauth2Client.setCredentials({
       access_token: userData.googleAccessToken,
       refresh_token: userData.googleRefreshToken,
       expiry_date: userData.googleTokenExpiry?.getTime(),
     });
 
-    // Create Google Fit API client
     const fitness = google.fitness({ version: "v1", auth: oauth2Client });
 
-    console.log("Fetching step data from Google Fit API...");
-
-    // Get step data for the last 7 days
-    const endTime = new Date();
-    const startTime = new Date();
-    startTime.setDate(startTime.getDate() - 7);
+    // Use UTC to avoid timezone inconsistencies
+    const now = new Date();
+    const startTime = new Date(Date.UTC(
+      now.getUTCFullYear(),
+      now.getUTCMonth(),
+      now.getUTCDate() - 7,
+      0, 0, 0, 0
+    ));
+    const endTime = new Date(Date.UTC(
+      now.getUTCFullYear(),
+      now.getUTCMonth(),
+      now.getUTCDate(),
+      23, 59, 59, 999
+    ));
 
     try {
-      // Try to get step data from Google Fit
       const response = await fitness.users.dataset.aggregate({
         userId: "me",
         requestBody: {
@@ -85,16 +85,13 @@ export async function GET(req: NextRequest) {
             },
           ],
           bucketByTime: {
-            durationMillis: "86400000", // 1 day
+            durationMillis: "86400000",
           },
           startTimeMillis: startTime.getTime().toString(),
           endTimeMillis: endTime.getTime().toString(),
         },
       });
 
-      console.log("Google Fit API response received");
-
-      // Process the response
       const buckets = response.data.bucket || [];
       const stepData = buckets.map((bucket: unknown) => {
         const bucketData = bucket as {
@@ -108,21 +105,23 @@ export async function GET(req: NextRequest) {
         const date = new Date(parseInt(bucketData.startTimeMillis));
         const steps =
           bucketData.dataset?.[0]?.point?.[0]?.value?.[0]?.intVal || 0;
-
         return {
           date: date.toISOString().split("T")[0],
           steps: steps,
         };
       });
 
+      const today = new Date().toISOString().split("T")[0];
+      const todayData = stepData.find((data) => data.date === today);
+      const todaySteps = todayData?.steps || 0;
       const totalSteps = stepData.reduce((sum, day) => sum + day.steps, 0);
 
-      // Return response with hardcoded goal for streaks
       return NextResponse.json({
+        todaySteps,
         totalSteps,
         dailySteps: stepData,
         connected: true,
-        dailyStepsGoal: 10000, // Hardcoded goal for streaks
+        dailyStepsGoal: 10000,
       });
     } catch (apiError: unknown) {
       console.error("Google Fit API error:", apiError);
@@ -132,7 +131,6 @@ export async function GET(req: NextRequest) {
         message?: string;
       };
 
-      // Check if it's a token issue
       if (
         error.message?.includes("invalid_grant") ||
         error.message?.includes("unauthorized") ||
@@ -140,12 +138,12 @@ export async function GET(req: NextRequest) {
       ) {
         return NextResponse.json(
           { error: "Google Fit token expired, please reconnect" },
-          { status: 401 }
+          { status: 401 },
         );
       }
 
-      // For other errors, return a message about no data
       return NextResponse.json({
+        todaySteps: 0,
         totalSteps: 0,
         dailySteps: [],
         connected: true,
@@ -157,7 +155,7 @@ export async function GET(req: NextRequest) {
     console.error("Server error:", error);
     return NextResponse.json(
       { error: "Failed to fetch step data" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

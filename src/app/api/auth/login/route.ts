@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { compare } from "bcrypt";
+import { compare } from "bcryptjs";
 import jwt from "jsonwebtoken";
 import db from "@/config/drizzle";
 import { users } from "@/db/schema";
@@ -9,8 +9,6 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { email, password } = body;
-
-    console.log(email, password);
 
     const user = await db.select().from(users).where(eq(email, users.email));
 

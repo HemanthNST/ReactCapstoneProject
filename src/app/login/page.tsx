@@ -3,6 +3,7 @@ import { useRef, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { notyf } from "@/lib/notyf";
+import { redirectIfAuthenticated } from "@/lib/auth";
 
 const Page = () => {
   const emailRef = useRef<HTMLInputElement>(null);
@@ -10,6 +11,9 @@ const Page = () => {
 
   // Check for URL parameters to show notifications
   useEffect(() => {
+    // Check if user is authenticated and redirect to steps page
+    redirectIfAuthenticated();
+
     const urlParams = new URLSearchParams(window.location.search);
     const error = urlParams.get("error");
 
@@ -39,51 +43,46 @@ const Page = () => {
 
   return (
     <>
-      <form className="flex flex-col items-center justify-center h-screen font-['5by7']">
-        <div
-          style={{
-            padding: "550px",
-            display: "flex",
-            flexDirection: "column",
-            gap: "20px",
-          }}
-          className="w-full">
-          <h1 className="text-2xl font-bold m-2 font-['5by7B']">
+      <form className="flex flex-col items-center justify-center min-h-screen font-['5by7'] px-4 md:px-8 lg:px-12 py-20 md:py-24">
+        <div className="w-full max-w-md mx-auto flex flex-col gap-4 md:gap-6">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-center font-['5by7B'] mb-4">
             WELCOME BACK
           </h1>
           <div className="flex flex-col gap-0 w-full">
-            <div className="flex gap-4 bg-[#1A1A1A] rounded-t-4xl py-8 px-16 w-full">
+            <div className="flex gap-3 md:gap-4 bg-[#1A1A1A] rounded-t-lg md:rounded-t-2xl py-4 md:py-6 lg:py-8 px-4 md:px-8 lg:px-16 w-full">
               <Image
                 src="/icons/emailPixel.svg"
                 alt="email icon"
                 width={24}
                 height={24}
+                className="w-5 h-5 md:w-6 md:h-6 flex-shrink-0"
               />
               <input
                 placeholder="Enter your email"
                 ref={emailRef}
-                className="outline-none w-full"
+                className="outline-none w-full bg-transparent text-white placeholder-gray-400 text-sm md:text-base"
               />
             </div>
-            <div className="flex gap-4 bg-[#282828] rounded-b-4xl py-8 px-16 w-full">
+            <div className="flex gap-3 md:gap-4 bg-[#282828] rounded-b-lg md:rounded-b-2xl py-4 md:py-6 lg:py-8 px-4 md:px-8 lg:px-16 w-full">
               <Image
                 src="/icons/passwordPixel.svg"
-                alt="email icon"
+                alt="password icon"
                 width={24}
                 height={24}
+                className="w-5 h-5 md:w-6 md:h-6 flex-shrink-0"
               />
               <input
                 placeholder="Enter your password"
                 type="password"
                 ref={passwordRef}
-                className="outline-none w-full"
+                className="outline-none w-full bg-transparent text-white placeholder-gray-400 text-sm md:text-base"
               />
             </div>
           </div>
-          <div className="flex w-full gap-12">
+          <div className="flex flex-col sm:flex-row w-full gap-4 md:gap-6 mt-4">
             <Link
               href="/register"
-              className="w-full border-1 border-white rounded-full py-6 cursor-pointer hover:bg-white hover:text-black transition-colors duration-200 ease-in-out text-center font-['5by7B']">
+              className="w-full border border-white rounded-full py-3 md:py-4 lg:py-6 cursor-pointer hover:bg-white hover:text-black transition-colors duration-200 ease-in-out text-center font-['5by7B'] text-sm md:text-base">
               REGISTER INSTEAD?
             </Link>
             <button
@@ -148,7 +147,7 @@ const Page = () => {
                   );
                 }
               }}
-              className="w-full bg-[#D71921] rounded-full py-6 cursor-pointer hover:opacity-70 transition-opacity duration-200 ease-in-out font-['5by7B']">
+              className="w-full bg-[#D71921] rounded-full py-3 md:py-4 lg:py-6 cursor-pointer hover:opacity-70 transition-opacity duration-200 ease-in-out font-['5by7B'] text-sm md:text-base">
               STEP FORWARD
             </button>
           </div>

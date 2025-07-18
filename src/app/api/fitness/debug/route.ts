@@ -67,8 +67,6 @@ export async function GET(req: NextRequest) {
     // Create Google Fit API client
     const fitness = google.fitness({ version: "v1", auth: oauth2Client });
 
-    console.log("🔍 Debugging Google Fit data sources...");
-
     try {
       // Get all available data sources
       const dataSourcesResponse = await fitness.users.dataSources.list({
@@ -76,7 +74,6 @@ export async function GET(req: NextRequest) {
       });
 
       const dataSources = dataSourcesResponse.data.dataSource || [];
-      console.log("📊 Total data sources found:", dataSources.length);
 
       // Filter and categorize data sources
       const stepDataSources = dataSources.filter(

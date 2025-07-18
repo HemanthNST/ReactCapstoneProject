@@ -6,26 +6,20 @@ import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
 export async function GET(req: NextRequest) {
-  console.log("Google OAuth callback initiated");
-
   // Get the base URL for absolute redirects
   const baseUrl = new URL(req.url).origin;
 
   try {
     const { searchParams } = new URL(req.url);
     const code = searchParams.get("code");
-    console.log("Authorization code received:", code ? "Yes" : "No");
 
     if (!code) {
-      console.log("No authorization code found");
       return NextResponse.redirect(`${baseUrl}/login?error=google_auth_failed`);
     }
 
     // Get user session to link Google account
     const sessionCookie = req.cookies.get("session");
-    console.log("Session cookie found:", sessionCookie ? "Yes" : "No");
     if (!sessionCookie) {
-      console.log("No session cookie found");
       return NextResponse.redirect(`${baseUrl}/login?error=session_required`);
     }
 
@@ -33,7 +27,7 @@ export async function GET(req: NextRequest) {
     try {
       const payload = jwt.verify(
         sessionCookie.value,
-        process.env.NEXT_PUBLIC_SESSION_SECRET!
+        process.env.NEXT_PUBLIC_SESSION_SECRET!,
       ) as { uuid: string };
       userId = payload.uuid;
     } catch (error) {
@@ -41,14 +35,12 @@ export async function GET(req: NextRequest) {
       return NextResponse.redirect(`${baseUrl}/login?error=invalid_session`);
     }
 
-    console.log("Setting up OAuth client");
     const oauth2Client = new google.auth.OAuth2(
       process.env.GOOGLE_CLIENT_ID,
       process.env.GOOGLE_CLIENT_SECRET,
-      process.env.GOOGLE_REDIRECT_URI
+      process.env.GOOGLE_REDIRECT_URI,
     );
 
-    console.log("Exchanging code for tokens");
     // Exchange code for tokens
     let tokens;
     try {
@@ -61,20 +53,15 @@ export async function GET(req: NextRequest) {
         tokenError.message &&
         tokenError.message.includes("invalid_grant")
       ) {
-        console.log(
-          "Invalid grant error - authorization code may have been used already or expired"
-        );
         return NextResponse.redirect(`${baseUrl}/steps?error=code_expired`);
       }
       throw tokenError;
     }
 
     if (!tokens.access_token) {
-      console.log("No access token received");
       return NextResponse.redirect(`${baseUrl}/steps?error=google_auth_failed`);
     }
 
-    console.log("Access token received, updating user in database");
     // Update user with Google tokens
     await db
       .update(users)
@@ -94,7 +81,7 @@ export async function GET(req: NextRequest) {
       const testOauth2Client = new google.auth.OAuth2(
         process.env.GOOGLE_CLIENT_ID,
         process.env.GOOGLE_CLIENT_SECRET,
-        process.env.GOOGLE_REDIRECT_URI
+        process.env.GOOGLE_REDIRECT_URI,
       );
 
       testOauth2Client.setCredentials({
@@ -103,34 +90,11 @@ export async function GET(req: NextRequest) {
         expiry_date: tokens.expiry_date,
       });
 
-      const fitness = google.fitness({ version: "v1", auth: testOauth2Client });
-      console.log("🔍 Testing data source access after OAuth...");
-
-      const dataSourcesResponse = await fitness.users.dataSources.list({
-        userId: "me",
-      });
-
-      const dataSources = dataSourcesResponse.data.dataSource || [];
-      console.log("📊 Data sources available:", dataSources.length);
-
-      const stepDataSources = dataSources.filter(
-        source => source.dataType?.name === "com.google.step_count.delta"
-      );
-      console.log("👟 Step data sources:", stepDataSources.length);
-
-      if (stepDataSources.length > 0) {
-        console.log("👟 Available step data sources:");
-        stepDataSources.forEach((source, index) => {
-          console.log(`  ${index + 1}: ${source.dataStreamId}`);
-        });
-      } else {
-        console.log("⚠️ No step data sources found immediately after OAuth");
-      }
-    } catch (testError) {
-      console.log("⚠️ Could not test data sources after OAuth:", testError);
+      google.fitness({ version: "v1", auth: testOauth2Client });
+    } catch {
+      // Test failed, but authentication succeeded - not critical
     }
 
-    console.log("User updated successfully, redirecting to dashboard");
     return NextResponse.redirect(`${baseUrl}/steps?connected=true`);
   } catch (error) {
     console.error("Google OAuth callback error:", error);

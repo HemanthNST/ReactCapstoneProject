@@ -1,29 +1,64 @@
-// This file is deprecated - we now use a hardcoded goal of 10,000 steps for streaks
-// No user-configurable goal setting is needed
-//
-// The streak feature uses a hardcoded goal and is implemented in:
-// - /api/fitness/steps-simple/route.ts (streak calculation)
-// - /steps/page.tsx (streak display)
+import { NextResponse, NextRequest } from "next/server";
+import jwt from "jsonwebtoken";
+import db from "@/config/drizzle";
+import { eq } from "drizzle-orm";
+import { users } from "@/db/schema";
 
-import { NextResponse } from "next/server";
+// Please write get function using that below function as a reference
+export async function GET(request: NextRequest) {
+  // Get token from cookies
+  const refreshToken = request.cookies.get("session")?.value;
 
-export async function GET() {
+  if (!refreshToken) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  // Verify JWT token
+  const payload = jwt.verify(
+    refreshToken,
+    process.env.NEXT_PUBLIC_SESSION_SECRET as string
+  ) as { uuid: string };
+
+  // Use the select query
+  const user = await db
+    .select()
+    .from(users)
+    .where(eq(users.uuid, payload.uuid))
+    .then(data => data[0]);
+
+  if (!user) {
+    return NextResponse.json({ error: "User not found" }, { status: 404 });
+  }
+
   return NextResponse.json(
-    {
-      error:
-        "Goal setting is deprecated. Streaks use a hardcoded goal of 10,000 steps.",
-      dailyStepsGoal: 10000,
-    },
-    { status: 410 }
+    { dailyStepsGoal: user.dailyStepsGoal },
+    { status: 200 }
   );
 }
 
-export async function PUT() {
-  return NextResponse.json(
-    {
-      error:
-        "Goal setting is deprecated. Streaks use a hardcoded goal of 10,000 steps.",
-    },
-    { status: 410 }
-  );
+export async function PUT(request: NextRequest) {
+  const { goal } = await request.json();
+  // Get token from cookies
+  const refreshToken = request.cookies.get("session")?.value;
+
+  if (!refreshToken) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  // Verify JWT token
+  const payload = jwt.verify(
+    refreshToken,
+    process.env.NEXT_PUBLIC_SESSION_SECRET as string
+  ) as { uuid: string };
+
+  // Update user name in database
+  await db
+    .update(users)
+    .set({ dailyStepsGoal: goal })
+    .where(eq(users.uuid, payload.uuid));
+
+  return NextResponse.json({
+    success: true,
+    message: "Name updated successfully",
+  });
 }

@@ -1,8 +1,9 @@
 "use client";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { notyf } from "@/lib/notyf";
+import { redirectIfAuthenticated } from "@/lib/auth";
 
 const Page = () => {
   const nameRef = useRef<HTMLInputElement>(null);
@@ -13,6 +14,11 @@ const Page = () => {
   const [profilePictureFile, setProfilePictureFile] = useState<File | null>(
     null
   );
+
+  // Check if user is authenticated and redirect to steps page
+  useEffect(() => {
+    redirectIfAuthenticated();
+  }, []);
 
   const handlePictureUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -42,26 +48,19 @@ const Page = () => {
 
   return (
     <>
-      <form className="flex flex-col items-center justify-center h-screen font-['5by7']">
-        <div
-          style={{
-            padding: "550px",
-            display: "flex",
-            flexDirection: "column",
-            gap: "20px",
-          }}
-          className="w-full">
-          <h1 className="text-2xl font-bold mb-0 ml-0 m-2 font-['5by7B']">
+      <form className="flex flex-col md:mt-18 items-center justify-center min-h-screen px-4 md:px-8 lg:px-12 py-20 md:py-24 instru">
+        <div className="w-full max-w-md mx-auto flex flex-col gap-4 md:gap-6">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-center font-['5by7B']">
             WELCOME TO STEPPY
           </h1>
-          <h1 className="text-xl font-bold tracking-wider font-['5by7B']">
+          <h2 className="text-base sm:text-lg md:text-xl font-bold tracking-wider text-center font-['5by7B'] mb-4">
             let&#39;s create your profile
-          </h1>
+          </h2>
 
           {/* Profile Picture Upload */}
-          <div className="flex flex-col items-center mb-6">
+          <div className="flex flex-col items-center mb-4 md:mb-6">
             <div className="relative">
-              <div className="w-24 h-24 bg-gradient-to-r from-[#D71921] to-red-700 rounded-full flex items-center justify-center overflow-hidden mb-4">
+              <div className="w-20 h-20 md:w-24 md:h-24 bg-gradient-to-r from-[#D71921] to-red-700 rounded-full flex items-center justify-center overflow-hidden mb-3 md:mb-4">
                 {profilePicture ? (
                   <Image
                     src={profilePicture}
@@ -72,7 +71,7 @@ const Page = () => {
                   />
                 ) : (
                   <svg
-                    className="w-8 h-8 text-white"
+                    className="w-6 h-6 md:w-8 md:h-8 text-white"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24">
@@ -85,7 +84,7 @@ const Page = () => {
                   </svg>
                 )}
               </div>
-              <label className="absolute inset-0 w-24 h-24 rounded-full bg-black bg-opacity-50 flex items-center justify-center cursor-pointer opacity-0 hover:opacity-100 transition-opacity duration-200">
+              <label className="absolute inset-0 w-20 h-20 md:w-24 md:h-24 rounded-full bg-black bg-opacity-50 flex items-center justify-center cursor-pointer opacity-0 hover:opacity-100 transition-opacity duration-200">
                 <input
                   type="file"
                   accept="image/*"
@@ -93,7 +92,7 @@ const Page = () => {
                   className="hidden"
                 />
                 <svg
-                  className="w-6 h-6 text-white"
+                  className="w-5 h-5 md:w-6 md:h-6 text-white"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24">
@@ -112,71 +111,75 @@ const Page = () => {
                 </svg>
               </label>
             </div>
-            <p className="text-sm text-gray-400">
+            <p className="text-xs md:text-sm text-gray-400 text-center">
               Add a profile picture (optional)
             </p>
           </div>
 
           <div className="flex flex-col gap-0 w-full">
-            <div className="flex gap-4 bg-[#1A1A1A] rounded-t-4xl py-8 px-16 w-full">
+            <div className="flex gap-3 md:gap-4 bg-[#1A1A1A] rounded-t-lg md:rounded-t-2xl py-3 md:py-4 lg:py-6 px-4 md:px-8 lg:px-12 w-full">
               <Image
                 src="/icons/emailPixel.svg"
-                alt="email icon"
+                alt="name icon"
                 width={24}
                 height={24}
+                className="w-5 h-5 md:w-6 md:h-6 flex-shrink-0"
               />
               <input
                 placeholder="Enter your name"
                 ref={nameRef}
-                className="outline-none w-full"
+                className="outline-none w-full bg-transparent text-white placeholder-gray-400 text-sm md:text-base"
               />
             </div>
-            <div className="flex gap-4 bg-[#282828] py-8 px-16 w-full">
+            <div className="flex gap-3 md:gap-4 bg-[#282828] py-3 md:py-4 lg:py-6 px-4 md:px-8 lg:px-12 w-full">
               <Image
                 src="/icons/emailPixel.svg"
                 alt="email icon"
                 width={24}
                 height={24}
+                className="w-5 h-5 md:w-6 md:h-6 flex-shrink-0"
               />
               <input
                 placeholder="Enter your email"
                 ref={emailRef}
-                className="outline-none w-full"
+                className="outline-none w-full bg-transparent text-white placeholder-gray-400 text-sm md:text-base"
               />
             </div>
-            <div className="flex gap-4 bg-[#1A1A1A] py-8 px-16 w-full">
+            <div className="flex gap-3 md:gap-4 bg-[#1A1A1A] py-3 md:py-4 lg:py-6 px-4 md:px-8 lg:px-12 w-full">
               <Image
                 src="/icons/passwordPixel.svg"
-                alt="email icon"
+                alt="password icon"
                 width={24}
                 height={24}
+                className="w-5 h-5 md:w-6 md:h-6 flex-shrink-0"
               />
               <input
                 placeholder="Enter your password"
                 type="password"
                 ref={passwordRef}
-                className="outline-none w-full"
+                className="outline-none w-full bg-transparent text-white placeholder-gray-400 text-sm md:text-base"
               />
             </div>
-            <div className="flex gap-4 bg-[#282828] rounded-b-4xl py-8 px-16 w-full">
+            <div className="flex gap-3 md:gap-4 bg-[#282828] rounded-b-lg md:rounded-b-2xl py-3 md:py-4 lg:py-6 px-4 md:px-8 lg:px-12 w-full">
               <Image
                 src="/icons/passwordPixel.svg"
-                alt="email icon"
+                alt="confirm password icon"
                 width={24}
                 height={24}
+                className="w-5 h-5 md:w-6 md:h-6 flex-shrink-0"
               />
               <input
                 placeholder="Confirm your password"
                 type="password"
                 ref={confirmPasswordRef}
-                className="outline-none w-full"
+                className="outline-none w-full bg-transparent text-white placeholder-gray-400 text-sm md:text-base"
               />
             </div>
           </div>
-          <div className="flex w-full gap-12">
+          <div className="flex flex-col sm:flex-row w-full gap-4 md:gap-6 mt-4">
             <Link
               href="/login"
-              className="w-full border-1 border-white rounded-full py-6 cursor-pointer hover:bg-white hover:text-black transition-colors duration-200 ease-in-out text-center font-['5by7B']">
+              className="w-full border border-white rounded-full py-3 md:py-4 lg:py-6 cursor-pointer hover:bg-white hover:text-black transition-colors duration-200 ease-in-out text-center font-['5by7B'] text-sm md:text-base">
               LOGIN INSTEAD?
             </Link>
             <button
@@ -275,7 +278,7 @@ const Page = () => {
                   );
                 }
               }}
-              className="w-full bg-[#D71921] rounded-full py-6 cursor-pointer hover:opacity-70 transition-opacity duration-200 ease-in-out font-['5by7B']">
+              className="w-full bg-[#D71921] rounded-full py-3 md:py-4 lg:py-6 cursor-pointer hover:opacity-70 transition-opacity duration-200 ease-in-out font-['5by7B'] text-sm md:text-base">
               STEP FORWARD
             </button>
           </div>
