@@ -60,7 +60,7 @@ const Page = () => {
               <input
                 placeholder="Enter your email"
                 ref={emailRef}
-                className="outline-none w-full bg-transparent text-white placeholder-gray-400 text-sm md:text-base"
+                className="outline-none instru w-full bg-transparent text-white placeholder-gray-400 text-sm md:text-base"
               />
             </div>
             <div className="flex gap-3 md:gap-4 bg-[#282828] rounded-b-lg md:rounded-b-2xl py-4 md:py-6 lg:py-8 px-4 md:px-8 lg:px-16 w-full">
@@ -75,7 +75,7 @@ const Page = () => {
                 placeholder="Enter your password"
                 type="password"
                 ref={passwordRef}
-                className="outline-none w-full bg-transparent text-white placeholder-gray-400 text-sm md:text-base"
+                className="outline-none instru w-full bg-transparent text-white placeholder-gray-400 text-sm md:text-base"
               />
             </div>
           </div>

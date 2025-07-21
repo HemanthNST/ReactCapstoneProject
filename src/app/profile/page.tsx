@@ -112,8 +112,8 @@ const Profile = () => {
       });
 
       if (res.ok) {
-        setUserProfile((prev) =>
-          prev ? { ...prev, dailyStepsGoal: Number(newGoal) } : null,
+        setUserProfile(prev =>
+          prev ? { ...prev, dailyStepsGoal: Number(newGoal) } : null
         );
         setEditing(false);
         notyf.success("Daily goal updated successfully!");
@@ -142,8 +142,8 @@ const Profile = () => {
       });
 
       if (res.ok) {
-        setUserProfile((prev) =>
-          prev ? { ...prev, name: newName.trim() } : null,
+        setUserProfile(prev =>
+          prev ? { ...prev, name: newName.trim() } : null
         );
         setEditingName(false);
         notyf.success("Name updated successfully!");
@@ -157,7 +157,7 @@ const Profile = () => {
   };
 
   const handleUploadPicture = async (
-    event: React.ChangeEvent<HTMLInputElement>,
+    event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -187,8 +187,8 @@ const Profile = () => {
 
       if (res.ok) {
         const data = await res.json();
-        setUserProfile((prev) =>
-          prev ? { ...prev, profilePicture: data.profilePicture } : null,
+        setUserProfile(prev =>
+          prev ? { ...prev, profilePicture: data.profilePicture } : null
         );
         notyf.success("Profile picture updated successfully!");
       } else {
@@ -305,8 +305,7 @@ const Profile = () => {
           <p className="text-xl text-red-500">Failed to load profile</p>
           <button
             onClick={() => window.location.reload()}
-            className="mt-4 px-6 py-2 bg-[#D71921] text-white rounded-lg hover:bg-red-700 transition-colors"
-          >
+            className="mt-4 px-6 py-2 bg-[#D71921] text-white rounded-lg hover:bg-red-700 transition-colors">
             Retry
           </button>
         </div>
@@ -318,7 +317,7 @@ const Profile = () => {
     <div className="min-h-screen bg-black text-white font-['5by7']">
       <NavBar />
 
-      <div className="pt-32 px-8 lg:px-24 max-w-4xl mx-auto">
+      <div className="py-48 px-8 lg:px-24 max-w-4xl mx-auto">
         {/* Profile Header */}
         <div className="text-center mb-12">
           <div className="relative inline-block mb-6">
@@ -354,8 +353,7 @@ const Profile = () => {
                   className="w-6 h-6 text-white"
                   fill="none"
                   stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
+                  viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -378,15 +376,14 @@ const Profile = () => {
               <input
                 type="text"
                 value={newName}
-                onChange={(e) => setNewName(e.target.value)}
+                onChange={e => setNewName(e.target.value)}
                 className="bg-black border border-gray-600 rounded-lg px-4 py-2 text-2xl font-bold text-center text-white max-w-xs"
                 placeholder="Enter your name"
                 autoFocus
               />
               <button
                 onClick={handleUpdateName}
-                className="px-4 py-2 bg-[#D71921] text-white rounded-lg hover:bg-red-700 transition-colors"
-              >
+                className="px-4 py-2 bg-[#D71921] text-white rounded-lg hover:bg-red-700 transition-colors">
                 Save
               </button>
               <button
@@ -394,8 +391,7 @@ const Profile = () => {
                   setEditingName(false);
                   setNewName(userProfile.name);
                 }}
-                className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
-              >
+                className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">
                 Cancel
               </button>
             </div>
@@ -407,14 +403,12 @@ const Profile = () => {
               <button
                 onClick={() => setEditingName(true)}
                 className="p-2 text-gray-400 hover:text-[#D71921] transition-colors"
-                title="Edit name"
-              >
+                title="Edit name">
                 <svg
                   className="w-6 h-6"
                   fill="none"
                   stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
+                  viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -454,14 +448,13 @@ const Profile = () => {
                   <input
                     type="number"
                     value={newGoal}
-                    onChange={(e) => setNewGoal(e.target.value)}
+                    onChange={e => setNewGoal(e.target.value)}
                     className="bg-black border border-gray-600 rounded-lg px-3 py-2 text-white flex-1 w-5/6"
                     placeholder="Enter daily goal"
                   />
                   <button
                     onClick={handleUpdateGoal}
-                    className="px-4 py-2 bg-[#D71921] text-white rounded-lg hover:bg-red-700 transition-colors text-sm"
-                  >
+                    className="px-4 py-2 bg-[#D71921] text-white rounded-lg hover:bg-red-700 transition-colors text-sm">
                     Save
                   </button>
                   <button
@@ -469,8 +462,7 @@ const Profile = () => {
                       setEditing(false);
                       setNewGoal(String(userProfile.dailyStepsGoal));
                     }}
-                    className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm"
-                  >
+                    className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm">
                     Cancel
                   </button>
                 </div>
@@ -484,8 +476,7 @@ const Profile = () => {
                   </div>
                   <button
                     onClick={() => setEditing(true)}
-                    className="px-4 py-2 bg-[#D71921] text-white rounded-lg hover:bg-red-700 transition-colors"
-                  >
+                    className="px-4 py-2 bg-[#D71921] text-white rounded-lg hover:bg-red-700 transition-colors">
                     Edit
                   </button>
                 </>
@@ -519,15 +510,13 @@ const Profile = () => {
               <span
                 className={`font-semibold ${
                   userProfile.connected ? "text-green-500" : "text-red-500"
-                }`}
-              >
+                }`}>
                 {userProfile.connected ? "Connected" : "Disconnected"}
               </span>
               {!userProfile.connected && (
                 <button
                   onClick={handleConnectFitness}
-                  className="px-4 py-2 bg-[#D71921] text-white rounded-lg hover:bg-red-700 transition-colors"
-                >
+                  className="px-4 py-2 bg-[#D71921] text-white rounded-lg hover:bg-red-700 transition-colors">
                   Connect
                 </button>
               )}
@@ -543,8 +532,7 @@ const Profile = () => {
           <div className="space-y-4">
             <button
               onClick={() => (window.location.href = "/steps")}
-              className="w-full text-left px-4 py-3 bg-black border border-gray-600 rounded-lg hover:border-[#D71921] transition-colors"
-            >
+              className="w-full text-left px-4 py-3 bg-black border border-gray-600 rounded-lg hover:border-[#D71921] transition-colors">
               <span className="font-semibold">View Step Data</span>
               <p className="text-gray-400 text-sm">
                 Check your daily steps and progress
@@ -553,8 +541,7 @@ const Profile = () => {
 
             <button
               onClick={() => setChangingPassword(true)}
-              className="w-full text-left px-4 py-3 bg-black border border-gray-600 rounded-lg hover:border-[#D71921] transition-colors"
-            >
+              className="w-full text-left px-4 py-3 bg-black border border-gray-600 rounded-lg hover:border-[#D71921] transition-colors">
               <span className="font-semibold">Change Password</span>
               <p className="text-gray-400 text-sm">
                 Update your account password
@@ -563,8 +550,7 @@ const Profile = () => {
 
             <button
               onClick={handleLogout}
-              className="w-full text-left px-4 py-3 bg-black border border-red-600 rounded-lg hover:border-red-500 transition-colors text-red-400"
-            >
+              className="w-full text-left px-4 py-3 bg-black border border-red-600 rounded-lg hover:border-red-500 transition-colors text-red-400">
               <span className="font-semibold">Sign Out</span>
               <p className="text-gray-400 text-sm">
                 Sign out of your Steppy account
@@ -573,14 +559,14 @@ const Profile = () => {
           </div>
         </div>
 
-        {/* Password Change Modal */}
+        {/* Password Change Model */}
         {changingPassword && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-[#1a1a1a] rounded-2xl p-8 border border-gray-800 max-w-md w-full mx-4">
               <h3 className="text-2xl font-bold mb-6 text-[#D71921]">
                 Change Password
               </h3>
-              
+
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -589,7 +575,7 @@ const Profile = () => {
                   <input
                     type="password"
                     value={currentPassword}
-                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    onChange={e => setCurrentPassword(e.target.value)}
                     className="w-full bg-black border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-[#D71921] focus:outline-none"
                     placeholder="Enter your current password"
                   />
@@ -602,7 +588,7 @@ const Profile = () => {
                   <input
                     type="password"
                     value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
+                    onChange={e => setNewPassword(e.target.value)}
                     className="w-full bg-black border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-[#D71921] focus:outline-none"
                     placeholder="Enter your new password"
                   />
@@ -615,7 +601,7 @@ const Profile = () => {
                   <input
                     type="password"
                     value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    onChange={e => setConfirmPassword(e.target.value)}
                     className="w-full bg-black border border-gray-600 rounded-lg px-4 py-3 text-white focus:border-[#D71921] focus:outline-none"
                     placeholder="Confirm your new password"
                   />
@@ -624,8 +610,7 @@ const Profile = () => {
                 <div className="flex gap-4 mt-6">
                   <button
                     onClick={handleChangePassword}
-                    className="flex-1 px-6 py-3 bg-[#D71921] text-white rounded-lg hover:bg-red-700 transition-colors font-semibold"
-                  >
+                    className="flex-1 px-6 py-3 bg-[#D71921] text-white rounded-lg hover:bg-red-700 transition-colors font-semibold">
                     Change Password
                   </button>
                   <button
@@ -635,8 +620,7 @@ const Profile = () => {
                       setNewPassword("");
                       setConfirmPassword("");
                     }}
-                    className="flex-1 px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-semibold"
-                  >
+                    className="flex-1 px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-semibold">
                     Cancel
                   </button>
                 </div>

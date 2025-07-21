@@ -11,7 +11,7 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="flex flex-col md:flex-row items-center justify-center min-h-screen gap-8 md:gap-16 lg:gap-32 xl:gap-48 px-4 md:px-8 lg:px-12 py-8 font-['5by7']">
+    <div className="flex flex-col md:flex-row items-center justify-center min-h-screen gap-8 pt-28 md:gap-16 lg:gap-32 xl:gap-48 px-4 md:px-8 lg:px-12 py-8 font-['5by7']">
       <div className="flex flex-col gap-6 md:gap-8 lg:gap-12 text-center lg:text-left">
         <div className="flex justify-center lg:justify-start">
           <Image
@@ -29,8 +29,7 @@ const Home = () => {
         </h1>
         <Link
           href="/login"
-          className="w-full max-w-xs mx-auto lg:mx-0 text-center font-bold bg-[#D71921] rounded-full py-4 md:py-6 px-6 cursor-pointer hover:opacity-70 transition-opacity duration-200 ease-in-out font-['5by7B'] text-sm sm:text-base"
-        >
+          className="w-full max-w-xs mx-auto lg:mx-0 text-center font-bold bg-[#D71921] rounded-full py-4 md:py-6 px-6 cursor-pointer hover:opacity-70 transition-opacity duration-200 ease-in-out font-['5by7B'] text-sm sm:text-base">
           START TRACKING
         </Link>
       </div>

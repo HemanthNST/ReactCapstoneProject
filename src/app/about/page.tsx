@@ -8,7 +8,7 @@ const About = () => {
     <div className="min-h-screen bg-black text-white font-['5by7']">
       <NavBar />
 
-      <div className="pt-32 px-8 lg:px-24 max-w-6xl mx-auto">
+      <div className="py-42 px-8 lg:px-24 max-w-6xl mx-auto">
         {/* Hero Section */}
         <div className="text-center mb-16">
           <div className="flex justify-center mb-8">
@@ -35,15 +35,13 @@ const About = () => {
               Our Mission
             </h2>
             <p className="text-lg text-gray-300 leading-relaxed mb-6">
-              At Steppy, we believe that fitness starts with a single step. Our
-              mission is to make health tracking simple, motivating, and
-              accessible to everyone. We&apos;re here to help you build lasting
-              habits that lead to a healthier lifestyle.
-            </p>
-            <p className="text-lg text-gray-300 leading-relaxed">
-              Whether you&apos;re just beginning your fitness journey or looking
-              to maintain an active lifestyle, Steppy provides the tools and
-              motivation you need to succeed.
+              At Steppy, our mission is to empower you on your health and
+              wellness journey by making step tracking intuitive, beautiful, and
+              seamlessly integrated into your daily life. We believe that
+              monitoring your activity should be an inspiring experience, not a
+              chore. We&apos;re dedicated to providing a clear, elegant, and
+              private platform that helps you visualize your progress and
+              celebrate every step you take towards a healthier you
             </p>
           </div>
           <div className="flex justify-center items-center">
@@ -134,16 +132,10 @@ const About = () => {
               overwhelming, packed with features that distracted from the core
               goal of staying active.
             </p>
-            <p className="text-lg text-gray-300 leading-relaxed mb-6">
-              Our team of developers and fitness enthusiasts came together to
-              create something different - a step tracker that&apos;s powerful
-              yet simple, motivating without being pushy, and effective without
-              being overwhelming.
-            </p>
             <p className="text-lg text-gray-300 leading-relaxed">
-              Today, Steppy helps thousands of people take control of their
-              health, one step at a time. Join our community and discover how
-              small steps can lead to big changes.
+              Today, Steppy as a project is a way to improve one&apos;s health,
+              one step at a time. Join our community and discover how small
+              steps can lead to big changes.
             </p>
           </div>
         </div>
